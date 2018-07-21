@@ -2,24 +2,24 @@
  * Copyright (C) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------*/
 
-import { hostname } from "os";
-import { dirname } from "path";
 import vscode = require("vscode");
 import { CancellationToken, DebugConfiguration, DebugConfigurationProvider,
     ExtensionContext, ProviderResult, WorkspaceFolder } from "vscode";
 import { LanguageClient, NotificationType, RequestType } from "vscode-languageclient";
 import { IFeature } from "../feature";
-import { getPlatformDetails, IPlatformDetails, OperatingSystem } from "../platform";
+import { getPlatformDetails, OperatingSystem } from "../platform";
 import { PowerShellProcess} from "../process";
-import { SessionManager } from "../session";
+import { SessionManager, SessionStatus } from "../session";
 import Settings = require("../settings");
 import utils = require("../utils");
+
+export const StartDebuggerNotificationType =
+    new NotificationType<void, void>("powerShell/startDebugger");
 
 export class DebugSessionFeature implements IFeature, DebugConfigurationProvider {
 
     private sessionCount: number = 1;
     private command: vscode.Disposable;
-    private examplesPath: string;
     private tempDebugProcess: PowerShellProcess;
 
     constructor(context: ExtensionContext, private sessionManager: SessionManager) {
@@ -32,7 +32,14 @@ export class DebugSessionFeature implements IFeature, DebugConfigurationProvider
     }
 
     public setLanguageClient(languageClient: LanguageClient) {
-        // There is no implementation for this IFeature method
+        languageClient.onNotification(
+            StartDebuggerNotificationType,
+            () =>
+                vscode.debug.startDebugging(undefined, {
+                    request: "launch",
+                    type: "PowerShell",
+                    name: "PowerShell Interactive Session",
+        }));
     }
 
     // DebugConfigurationProvider method
@@ -40,6 +47,14 @@ export class DebugSessionFeature implements IFeature, DebugConfigurationProvider
         folder: WorkspaceFolder | undefined,
         config: DebugConfiguration,
         token?: CancellationToken): ProviderResult<DebugConfiguration> {
+
+        // Make sure there is a session running before attempting to debug/run a program
+        if (this.sessionManager.getSessionStatus() !== SessionStatus.Running) {
+            const msg = "Cannot debug or run a PowerShell script until the PowerShell session has started. " +
+                "Wait for the PowerShell session to finish starting and try again.";
+            vscode.window.showWarningMessage(msg);
+            return;
+        }
 
         // Starting a debug session can be done when there is no document open e.g. attach to PS host process
         const currentDocument = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.document : undefined;
@@ -53,10 +68,8 @@ export class DebugSessionFeature implements IFeature, DebugConfigurationProvider
             const platformDetails = getPlatformDetails();
             const versionDetails = this.sessionManager.getPowerShellVersionDetails();
 
-            if (versionDetails.edition.toLowerCase() === "core" &&
-                platformDetails.operatingSystem !== OperatingSystem.Windows) {
-
-                const msg = "PowerShell Core only supports attaching to a host process on Windows.";
+            if (platformDetails.operatingSystem !== OperatingSystem.Windows) {
+                const msg = "Attaching to a PowerShell Host Process is supported only on Windows.";
                 return vscode.window.showErrorMessage(msg).then((_) => {
                     return undefined;
                 });
@@ -75,12 +88,18 @@ export class DebugSessionFeature implements IFeature, DebugConfigurationProvider
                     ? currentDocument.uri.toString()
                     : currentDocument.fileName;
 
-            // For a folder-less workspace, vscode.workspace.rootPath will be undefined.
-            // PSES will convert that undefined to a reasonable working dir.
-            config.cwd =
-                currentDocument.isUntitled
-                    ? vscode.workspace.rootPath
-                    : currentDocument.fileName;
+            if (settings.debugging.createTemporaryIntegratedConsole) {
+                // For a folder-less workspace, vscode.workspace.rootPath will be undefined.
+                // PSES will convert that undefined to a reasonable working dir.
+                config.cwd =
+                    currentDocument.isUntitled
+                        ? vscode.workspace.rootPath
+                        : currentDocument.fileName;
+
+            } else {
+                // If the non-temp integrated console is being used, default to the current working dir.
+                config.cwd = "";
+            }
         }
 
         if (config.request === "launch") {

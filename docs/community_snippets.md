@@ -8,7 +8,9 @@
 
 ## What are snippets
 
-Code snippets are templates that make it easier to enter repeating code patterns, such as loops or conditional-statements. Check out the [VSCode documentation on snippets](https://code.visualstudio.com/docs/editor/userdefinedsnippets). It provides an overview and instructions on how to author snippets. It's really simple - just a little bit of JSON.
+Code snippets are templates that make it easier to enter repeating code patterns, such as loops or conditional-statements.
+The list of snippets below is not integrated into the extension. However, instead, users can add them to their own, custom snippets file.
+Check out the [VSCode documentation on snippets](https://code.visualstudio.com/docs/editor/userdefinedsnippets). It provides an overview and instructions on how to author snippets. It's really simple - just a little bit of JSON.
 
 _To contribute, check out our [guide here](#contributing)._
 
@@ -29,6 +31,7 @@ _To contribute, check out our [guide here](#contributing)._
 | [PesterTestForParameter](#pestertestforparameter) | _Create Pester test for parameter_ |
 | [PSCustomObject](#pscustomobject) | _A simple PSCustomObject by @brettmillerb_ |
 | [Region Block](#region-block) | _Region Block for organizing and folding of your code_ |
+| [Send-MailMessage](#send-mailmessage) | _Send an mail message with the most common parameters by @fullenw1_ |
 
 ## Snippets
 
@@ -309,6 +312,35 @@ Use the `#region` for organizing your code (including good code folding).
         "#endregion"
     ],
     "description": "Region Block for organizing and folding of your code"
+}
+```
+
+### Send-MailMessage
+
+Add the Send-MailMessage cmdlet with the most common parameters in a hashtable for splatting, by @fullenw1.
+
+#### Snippet
+
+```json
+"ex-Send-MailMessage": { 
+	"prefix": "ex-Send-MailMessage", 
+	"body": [ 
+		"$$Params = @{", 
+		"    'SmtpServer'  = 'smtp.mycompany.com'", 
+		"    'Port'        = 25", 
+		"    'Priority'    = 'Normal'", 
+		"    'From'        = 'sender@mycompany.com'", 
+		"    'To'          = 'mainrecipient@mycompany.com'", 
+		"    'Cc'          = 'copyrecipient@mycompany.com'", 
+		"    'Bcc'         = 'hiddenrecipient@mycompany.com'", 
+		"    'Subject'     = 'Mail title'", 
+		"    'Body'        = 'This is the content of my mail'", 
+		"    'BodyAsHtml'  = $$false", 
+		"    'Attachments' = 'c:\\MyFile.txt'", 
+		"}", 
+		"Send-MailMessage @Params" 
+	], 
+	"description": "Send a mail message" 
 }
 ```
 

@@ -166,17 +166,13 @@ export class SessionManager implements Middleware {
                 }
             }
 
-            // Generate a random id for the named pipes in case they have multiple instances of PSES running
-            const id = crypto.randomBytes(10).toString("hex");
             this.editorServicesArgs =
                 `-HostName 'Visual Studio Code Host' ` +
                 `-HostProfileId 'Microsoft.VSCode' ` +
                 `-HostVersion '${this.hostVersion}'` +
                 `-AdditionalModules @('PowerShellEditorServices.VSCode') ` +
-                `-BundledModulesPath '${this.bundledModulesPath}'` +
-                `-EnableConsoleRepl ` +
-                `-LanguageServicePipeName LanguageService_${id}.pipe ` +
-                `-DebugServicePipeName DebugService_${id}.pipe `;
+                `-BundledModulesPath '${PowerShellProcess.escapeSingleQuotes(this.bundledModulesPath)}'` +
+                `-EnableConsoleRepl `;
 
             if (this.sessionSettings.developer.editorServicesWaitForDebugger) {
                 this.editorServicesArgs += "-WaitForDebugger ";
@@ -224,6 +220,10 @@ export class SessionManager implements Middleware {
 
     public getSessionDetails(): utils.IEditorServicesSessionDetails {
         return this.sessionDetails;
+    }
+
+    public getSessionStatus(): SessionStatus {
+        return this.sessionStatus;
     }
 
     public getPowerShellVersionDetails(): IPowerShellVersionDetails {
@@ -535,19 +535,16 @@ export class SessionManager implements Middleware {
     }
 
     private startLanguageClient(sessionDetails: utils.IEditorServicesSessionDetails) {
-
-        const pipeName = sessionDetails.languageServicePipeName;
-
         // Log the session details object
         this.log.write(JSON.stringify(sessionDetails));
 
         try {
-            this.log.write("Connecting to language service on pipe " + pipeName + "...");
+            this.log.write(`Connecting to language service on pipe ${sessionDetails.languageServicePipeName}...`);
 
             const connectFunc = () => {
                 return new Promise<StreamInfo>(
                     (resolve, reject) => {
-                        const socket = net.connect(utils.getPipePath(pipeName));
+                        const socket = net.connect(sessionDetails.languageServicePipeName);
                         socket.on(
                             "connect",
                             () => {

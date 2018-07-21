@@ -1,11 +1,11 @@
 {
   "name": "PowerShell",
   "displayName": "PowerShell",
-  "version": "1.7.0",
+  "version": "1.8.1",
   "publisher": "ms-vscode",
   "description": "Develop PowerShell scripts in Visual Studio Code!",
   "engines": {
-    "vscode": "^1.22.0"
+    "vscode": "^1.23.0"
   },
   "license": "SEE LICENSE IN LICENSE.txt",
   "homepage": "https://github.com/PowerShell/vscode-powershell/blob/master/README.md",
@@ -52,7 +52,7 @@
     "vscode.powershell"
   ],
   "scripts": {
-    "compile": "tsc -v && tsc -p ./ && tslint -p ./ -e test/*",
+    "compile": "tsc -v && tsc -p ./ && tslint -p ./",
     "compile-watch": "tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "node ./node_modules/vscode/bin/test"
@@ -163,6 +163,11 @@
           "when": "resourceLangId == powershell",
           "command": "PowerShell.RunSelection",
           "group": "2_powershell"
+        },
+        {
+          "when": "resourceLangId == powershell",
+          "command": "PowerShell.OnlineHelp",
+          "group": "2_powershell"
         }
       ]
     },
@@ -257,9 +262,9 @@
               "type": "PowerShell",
               "request": "launch",
               "name": "PowerShell Launch ${Script}",
-              "script": "^\"\\${workspaceRoot}/${Script}\"",
+              "script": "^\"\\${workspaceFolder}/${Script}\"",
               "args": [],
-              "cwd": "^\"\\${workspaceRoot}\""
+              "cwd": "^\"\\${workspaceFolder}\""
             }
           },
           {
@@ -271,7 +276,7 @@
               "name": "PowerShell Pester Tests",
               "script": "Invoke-Pester",
               "args": [],
-              "cwd": "^\"\\${workspaceRoot}\""
+              "cwd": "^\"\\${workspaceFolder}\""
             }
           },
           {
@@ -292,17 +297,13 @@
               "type": "PowerShell",
               "request": "launch",
               "name": "PowerShell Interactive Session",
-              "cwd": "^\"\\${workspaceRoot}\""
+              "cwd": ""
             }
           }
         ],
         "configurationAttributes": {
           "launch": {
             "properties": {
-              "program": {
-                "type": "string",
-                "description": "Deprecated. Please use the 'script' property instead to specify the absolute path to the PowerShell script to launch under the debugger."
-              },
               "script": {
                 "type": "string",
                 "description": "Optional: Absolute path to the PowerShell script to launch under the debugger."
@@ -317,8 +318,8 @@
               },
               "cwd": {
                 "type": "string",
-                "description": "Absolute path to the working directory. Default is the current workspace.",
-                "default": "${workspaceRoot}"
+                "description": "Absolute path to the working directory. Default is the current workspace folder.",
+                "default": "${workspaceFolder}"
               },
               "createTemporaryIntegratedConsole": {
                 "type": "boolean",
@@ -385,7 +386,7 @@
             "type": "PowerShell",
             "request": "launch",
             "name": "PowerShell Interactive Session",
-            "cwd": "${workspaceRoot}"
+            "cwd": ""
           }
         ]
       }
@@ -466,6 +467,11 @@
           "type": "string",
           "default": "",
           "description": "Specifies the path to a PowerShell Script Analyzer settings file. To override the default settings for all projects, enter an absolute path, or enter a path relative to your workspace."
+        },
+        "powershell.codeFolding.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enables syntax based code folding. When disabled, the default indentation based code folding is used."
         },
         "powershell.codeFormatting.preset": {
           "type": "string",
