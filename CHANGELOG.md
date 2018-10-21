@@ -1,5 +1,114 @@
 # vscode-powershell Release History
 
+## v1.9.0
+### Thursday, September 27, 2018
+#### [vscode-powershell](https://github.com/powershell/vscode-powershell)
+
+- [vscode-PowerShell #1548](https://github.com/PowerShell/vscode-PowerShell/pull/1548) -
+  Explicitly return `undefined` from resolveDbgConfig when session not started (Thanks @rkeithhill!)
+- [vscode-PowerShell #1516](https://github.com/PowerShell/vscode-PowerShell/pull/1516) -
+  Change "Get Online Help" menu item label to "Get Help" (Thanks @corbob!)
+- [vscode-PowerShell #1525](https://github.com/PowerShell/vscode-PowerShell/pull/1525) -
+  Remove duplicate/overlapping folding regions (Thanks @glennsarti!)
+
+#### [PowerShellEditorServices](https://github.com/powershell/PowerShellEditorServices)
+
+- [PowerShellEditorServices #750](https://github.com/PowerShell/PowerShellEditorServices/pull/750) -
+  Fix issue where # in path causes the path to resolve incorrectly
+- [PowerShellEditorServices #721](https://github.com/PowerShell/PowerShellEditorServices/pull/721) -
+  Change Get-Help behavior to return local help when online help can't be displayed  (Thanks @corbob!)
+- [PowerShellEditorServices #748](https://github.com/PowerShell/PowerShellEditorServices/pull/748) -
+  Fix index out-of-range exception when deleting script files
+- [PowerShellEditorServices #749](https://github.com/PowerShell/PowerShellEditorServices/pull/749) -
+  Fix crash for finding symbols on bad paths
+- [PowerShellEditorServices #740](https://github.com/PowerShell/PowerShellEditorServices/pull/740) -
+  Fix inner help completion
+- [PowerShellEditorServices #736](https://github.com/PowerShell/PowerShellEditorServices/pull/736) -
+  Cache the reflection call done for completions
+- [PowerShellEditorServices #737](https://github.com/PowerShell/PowerShellEditorServices/pull/737) -
+  Remove LINQ usage in language service methods
+- [PowerShellEditorServices #743](https://github.com/PowerShell/PowerShellEditorServices/pull/743) -
+  Remove unnecessary LINQ calls from LanguageServer
+
+## v1.8.4
+### Friday, August 31, 2018
+#### [vscode-powershell](https://github.com/powershell/vscode-powershell)
+
+- [vscode-PowerShell #1489](https://github.com/PowerShell/vscode-PowerShell/pull/1489) -
+  Use asynchronous logic for help completions
+- [vscode-PowerShell #1477](https://github.com/PowerShell/vscode-PowerShell/pull/1477) -
+  Add BitsTransfer & user switch to install latest user profile insiders edition with Install-VSCode.ps1 script  (Thanks @tabs-not-spaces!)
+- [vscode-PowerShell #1485](https://github.com/PowerShell/vscode-PowerShell/pull/1485) -
+  Increase connection timeout
+
+#### [PowerShellEditorServices](https://github.com/powershell/PowerShellEditorServices)
+
+- [PowerShellEditorServices #728](https://github.com/PowerShell/PowerShellEditorServices/pull/728) -
+  Fix formatter crash when script contains parse errors
+- [PowerShellEditorServices #730](https://github.com/PowerShell/PowerShellEditorServices/pull/730) -
+  Fix crash where lines appended to end of script file causes out of bounds exception
+- [PowerShellEditorServices #732](https://github.com/PowerShell/PowerShellEditorServices/pull/732) -
+  Fix CodeLens crash when a file cannot be opened, stop unnecessary file reads in CodeLens
+- [PowerShellEditorServices #729](https://github.com/PowerShell/PowerShellEditorServices/pull/729) -
+  Fix a null dereference when an invalid cast exception has no inner exception
+- [PowerShellEditorServices #719](https://github.com/PowerShell/PowerShellEditorServices/pull/719) -
+  Reduce allocations in the CodeLens providers
+- [PowerShellEditorServices #725](https://github.com/PowerShell/PowerShellEditorServices/pull/725) -
+  Fix null dereference when debugging untitlted filesj
+- [PowerShellEditorServices #726](https://github.com/PowerShell/PowerShellEditorServices/pull/726) -
+  Fix comment-based help snippet
+
+
+## v1.8.3
+### Wednesday, August 15, 2018
+
+#### [vscode-powershell](https://github.com/powershell/vscode-powershell)
+
+-  [PowerShell/vscode-powershell #1480](https://github.com/PowerShell/vscode-powershell/pull/1480) -
+   Use PowerShell signing script in VSTS builds
+-  [PowerShell/vscode-powershell #1460](https://github.com/PowerShell/vscode-powershell/pull/1460) -
+   Use newer version for preleases
+-  [PowerShell/vscode-powershell #1475](https://github.com/PowerShell/vscode-powershell/pull/1475) -
+   Change resourceLangId to editorLangId so right-click works properly with unsaved files (Thanks @corbob!)
+-  [PowerShell/vscode-powershell #1467](https://github.com/PowerShell/vscode-powershell/pull/1467) -
+   Remove region folding from non-region areas (Thanks @glennsarti!)
+
+ #### [PowerShellEditorServices](https://github.com/powershell/PowerShellEditorServices)
+
+- [PowerShell/PowerShellEditorServices #722](https://github.com/PowerShell/PowerShellEditorServices/pull/722) -
+  Add VSTS signing step
+- [PowerShell/PowerShellEditorServices #717](https://github.com/PowerShell/PowerShellEditorServices/pull/717) -
+  Increment version for prerelease
+- [PowerShell/PowerShellEditorServices #715](https://github.com/PowerShell/PowerShellEditorServices/pull/715) -
+  Reduce allocations when parsing files (Thanks @mattpwhite!)
+
+## v1.8.2
+### Thursday, July 26, 2018
+
+#### [vscode-powershell](https://github.com/powershell/vscode-powershell)
+
+- [PowerShell/vscode-powershell #1438](https://github.com/PowerShell/vscode-powershell/pull/1438) -
+  Fix detecting contiguous comment blocks and regions (Thanks @glennsarti!)
+- [PowerShell/vscode-powershell #1436](https://github.com/PowerShell/vscode-powershell/pull/1436) -
+  First approach to fix issue with dbg/run start before PSES running (Thanks @rkeithhill!)
+
+#### [PowerShellEditorServices](https://github.com/powershell/PowerShellEditorServices)
+
+- [PowerShell/PowerShellEditorServices #712](https://github.com/PowerShell/PowerShellEditorServices/pull/712) -
+  workaround to support inmemory://
+- [PowerShell/PowerShellEditorServices #706](https://github.com/PowerShell/PowerShellEditorServices/pull/706) -
+  Go To Definition works with different Ast types
+- [PowerShell/PowerShellEditorServices #707](https://github.com/PowerShell/PowerShellEditorServices/pull/707) -
+  fix stdio passing
+- [PowerShell/PowerShellEditorServices #709](https://github.com/PowerShell/PowerShellEditorServices/pull/709) -
+  Stop Diagnostic logging from logging to stdio when the communication protocol is set to stdio
+- [PowerShell/PowerShellEditorServices #710](https://github.com/PowerShell/PowerShellEditorServices/pull/710) -
+  stdio should only launch language service not debug
+- [PowerShell/PowerShellEditorServices #705](https://github.com/PowerShell/PowerShellEditorServices/pull/705) -
+  Fix load order of PSSA modules
+- [PowerShell/PowerShellEditorServices #704](https://github.com/PowerShell/PowerShellEditorServices/pull/704) -
+  Do not enable PSAvoidTrailingWhitespace rule by default as it currenly flags whitespace-only lines as well (Thanks @bergmeister!)
+
 ## v1.8.1
 ### Wednesday, July 11, 2018
 

@@ -52,7 +52,11 @@ $Script:powershell_team = @(
 
 $Script:powershell_team_emails = @(
     "tylerl0706@gmail.com"
+    "rjmholt_msft@outlook.com"
 )
+
+# Very active contributors; keep their email-login mappings here to save a few queries to Github.
+$Script:community_login_map = @{}
 
 class CommitNode {
     [string] $Hash
@@ -112,7 +116,7 @@ function Get-ChildMergeCommit
     if ($PSCmdlet.ParameterSetName -eq "TagName") { $tag_hash = git rev-parse "$LastReleaseTag^0" }
 
     ## Get the merge commits that are reachable from 'HEAD' but not from the release tag
-    $merge_commits_not_in_release_branch = git --no-pager log --merges "$tag_hash..HEAD" --format='%H||%P'
+    $merge_commits_not_in_release_branch = git --no-pager log "$tag_hash..HEAD" --format='%H||%P'
     ## Find the child merge commit, whose parent-commit-hashes contains the release tag hash
     $child_merge_commit = $merge_commits_not_in_release_branch | Select-String -SimpleMatch $tag_hash
     return $child_merge_commit.Line
@@ -148,6 +152,66 @@ function New-CommitNode
     }
 }
 
+function Get-PRNumberFromCommitSubject
+{
+    param(
+        [string]$CommitSubject
+    )
+
+    if (-not $CommitSubject)
+    {
+        return $null
+    }
+
+    if (-not ($CommitSubject -match '(.*)\(#(\d+)\)$'))
+    {
+        return $null
+    }
+
+    return @{
+        Message = $Matches[1]
+        PR = $Matches[2]
+    }
+}
+
+function New-ChangeLogEntry
+{
+    param(
+        [ValidateNotNullOrEmpty()][string]$RepositoryName,
+        [ValidateNotNullOrEmpty()][string]$CommitMessage,
+        [int]$PRNumber,
+        [string]$UserToThank,
+        [switch]$IsBreakingChange
+    )
+
+    $repoUrl = "https://github.com/PowerShell/$RepositoryName"
+
+    $entry = if ($PRNumber)
+    {
+        "- [$RepositoryName #$PRNumber]($repoUrl/pull/$PRNumber) -"
+    }
+    else
+    {
+        "- [$RepositoryName]($repoUrl) -"
+    }
+
+    $entry += "`n  "
+
+    if ($IsBreakingChange)
+    {
+        $entry += "[Breaking Change] "
+    }
+
+    $entry += $CommitMessage
+
+    if ($UserToThank)
+    {
+        $entry += " (Thanks @$UserToThank!)"
+    }
+
+    return $entry
+}
+
 ##############################
 #.SYNOPSIS
 #Generate the draft change log of the git repo in the current directory
@@ -178,6 +242,9 @@ function Get-ChangeLog
 
         [Parameter(Mandatory)]
         [string]$RepoUri,
+
+        [Parameter(Mandatory)]
+        [string]$RepoName,
 
         [Parameter()]
         [switch]$HasCherryPick
@@ -233,31 +300,34 @@ function Get-ChangeLog
         $new_commits = $new_commits_during_last_release + $new_commits_after_last_release
     }
 
-    # They are very active contributors, so we keep their email-login mappings here to save a few queries to Github.
-    $community_login_map = @{}
+    $new_commits = $new_commits | Where-Object { -not $_.Subject.StartsWith('[Ignore]', [System.StringComparison]::OrdinalIgnoreCase) }
 
     foreach ($commit in $new_commits) {
-        if ($commit.AuthorEmail.EndsWith("@microsoft.com") -or $powershell_team -contains $commit.AuthorName -or $powershell_team_emails -contains $commit.AuthorEmail) {
-            $commit.ChangeLogMessage = "- {0}" -f $commit.Subject
+        $messageParts = Get-PRNumberFromCommitSubject $commit.Subject
+        if ($messageParts) {
+            $message = $messageParts.Message
+            $prNumber = $messageParts.PR
         } else {
-            if ($community_login_map.ContainsKey($commit.AuthorEmail)) {
-                $commit.AuthorGitHubLogin = $community_login_map[$commit.AuthorEmail]
+            $message = $commit.Subject
+        }
+
+        $userToThank = $null
+        if (-not ($commit.AuthorEmail.EndsWith("@microsoft.com") -or ($powershell_team -contains $commit.AuthorName) -or ($powershell_team_emails -contains $commit.AuthorEmail))) {
+            if ($Script:community_login_map.ContainsKey($commit.AuthorEmail)) {
+                $commit.AuthorGitHubLogin = $Script:community_login_map[$commit.AuthorEmail]
             } else {
                 $uri = "$RepoUri/commits/$($commit.Hash)"
                 $response = Invoke-WebRequest -Uri $uri -Method Get -Headers $header -ErrorAction SilentlyContinue
-                if($response)
-                {
+                if($response) {
                     $content = ConvertFrom-Json -InputObject $response.Content
                     $commit.AuthorGitHubLogin = $content.author.login
-                    $community_login_map[$commit.AuthorEmail] = $commit.AuthorGitHubLogin
+                    $Script:community_login_map[$commit.AuthorEmail] = $commit.AuthorGitHubLogin
                 }
             }
-            $commit.ChangeLogMessage = "- {0} (Thanks @{1}!)" -f $commit.Subject, $commit.AuthorGitHubLogin
+            $userToThank = $commit.AuthorGitHubLogin
         }
 
-        if ($commit.IsBreakingChange) {
-            $commit.ChangeLogMessage = "{0} [Breaking Change]" -f $commit.ChangeLogMessage
-        }
+        $commit.ChangeLogMessage = New-ChangeLogEntry -RepositoryName $RepoName -CommitMessage $message -PRNumber $prNumber -UserToThank $userToThank -IsBreakingChange:$commit.IsBreakingChange
     }
 
     $new_commits | Sort-Object -Descending -Property IsBreakingChange | ForEach-Object -MemberName ChangeLogMessage
@@ -301,9 +371,9 @@ function Get-PowerShellExtensionChangeLog {
         [switch]$HasCherryPick
     )
 
-    $vscodePowerShell = Get-ChangeLog -LastReleaseTag $LastReleaseTag -Token $Token -HasCherryPick:$HasCherryPick.IsPresent -RepoUri 'https://api.github.com/repos/PowerShell/vscode-powershell'
+    $vscodePowerShell = Get-ChangeLog -LastReleaseTag $LastReleaseTag -Token $Token -HasCherryPick:$HasCherryPick.IsPresent -RepoUri 'https://api.github.com/repos/PowerShell/vscode-powershell' -RepoName 'vscode-PowerShell'
     Push-Location ../PowerShellEditorServices
-    $pses = Get-ChangeLog -LastReleaseTag $LastReleaseTag -Token $Token -HasCherryPick:$HasCherryPick.IsPresent -RepoUri 'https://api.github.com/repos/PowerShell/PowerShellEditorServices'
+    $pses = Get-ChangeLog -LastReleaseTag $LastReleaseTag -Token $Token -HasCherryPick:$HasCherryPick.IsPresent -RepoUri 'https://api.github.com/repos/PowerShell/PowerShellEditorServices' -RepoName 'PowerShellEditorServices'
     Pop-Location
 
     return @"

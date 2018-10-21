@@ -41,15 +41,15 @@ suite("Features", () => {
                 { start: 0,  end: 4,  kind: 3 },
                 { start: 1,  end: 3,  kind: 1 },
                 { start: 10, end: 15, kind: 1 },
-                { start: 16, end: 60, kind: 3 },
+                { start: 16, end: 60, kind: null },
                 { start: 17, end: 22, kind: 1 },
-                { start: 23, end: 26, kind: 3 },
-                { start: 28, end: 31, kind: 3 },
+                { start: 23, end: 26, kind: null },
+                { start: 28, end: 31, kind: null },
                 { start: 35, end: 37, kind: 1 },
                 { start: 39, end: 49, kind: 3 },
                 { start: 41, end: 45, kind: 3 },
-                { start: 51, end: 53, kind: 3 },
-                { start: 56, end: 59, kind: 3 },
+                { start: 51, end: 53, kind: null },
+                { start: 56, end: 59, kind: null },
                 { start: 64, end: 66, kind: 1 },
                 { start: 67, end: 72, kind: 3 },
                 { start: 68, end: 70, kind: 1 },
@@ -81,6 +81,35 @@ suite("Features", () => {
                 assert.equal(document.getText().indexOf("\r\n"), -1);
 
                 assertFoldingRegions(result, expectedFoldingRegions);
+            });
+
+            test("Can detect all of the foldable regions in a document with mismatched regions", async () => {
+                const expectedMismatchedFoldingRegions = [
+                    { start: 2,  end: 4,  kind: 3 },
+                ];
+
+                // Integration test against the test fixture 'folding-mismatch.ps1' that contains
+                // comment regions with mismatched beginning and end
+                const uri = vscode.Uri.file(path.join(fixturePath, "folding-mismatch.ps1"));
+                const document = await vscode.workspace.openTextDocument(uri);
+                const result = await provider.provideFoldingRanges(document, null, null);
+
+                assertFoldingRegions(result, expectedMismatchedFoldingRegions);
+            });
+
+            test("Does not return duplicate or overlapping regions", async () => {
+                const expectedMismatchedFoldingRegions = [
+                    { start: 1,  end: 2,  kind: null },
+                    { start: 2,  end: 4,  kind: null },
+                ];
+
+                // Integration test against the test fixture 'folding-mismatch.ps1' that contains
+                // duplicate/overlapping ranges due to the `(` and `{` characters
+                const uri = vscode.Uri.file(path.join(fixturePath, "folding-duplicate.ps1"));
+                const document = await vscode.workspace.openTextDocument(uri);
+                const result = await provider.provideFoldingRanges(document, null, null);
+
+                assertFoldingRegions(result, expectedMismatchedFoldingRegions);
             });
         });
     });

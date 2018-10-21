@@ -27,7 +27,7 @@ import { OpenInISEFeature } from "./features/OpenInISE";
 import { PesterTestsFeature } from "./features/PesterTests";
 import { RemoteFilesFeature } from "./features/RemoteFiles";
 import { SelectPSSARulesFeature } from "./features/SelectPSSARules";
-import { ShowHelpFeature } from "./features/ShowOnlineHelp";
+import { ShowHelpFeature } from "./features/ShowHelp";
 import { Logger, LogLevel } from "./logging";
 import { SessionManager } from "./session";
 import Settings = require("./settings");
@@ -36,7 +36,7 @@ import utils = require("./utils");
 
 // NOTE: We will need to find a better way to deal with the required
 //       PS Editor Services version...
-const requiredEditorServicesVersion = "1.8.1";
+const requiredEditorServicesVersion = "1.9.1";
 
 let logger: Logger;
 let sessionManager: SessionManager;
@@ -118,16 +118,16 @@ export function activate(context: vscode.ExtensionContext): void {
 
     // Create features
     extensionFeatures = [
-        new ConsoleFeature(),
+        new ConsoleFeature(logger),
         new ExamplesFeature(),
         new OpenInISEFeature(),
         new GenerateBugReportFeature(sessionManager),
-        new ExpandAliasFeature(),
-        new ShowHelpFeature(),
+        new ExpandAliasFeature(logger),
+        new ShowHelpFeature(logger),
         new FindModuleFeature(),
         new PesterTestsFeature(sessionManager),
         new ExtensionCommandsFeature(logger),
-        new SelectPSSARulesFeature(),
+        new SelectPSSARulesFeature(logger),
         new CodeActionsFeature(),
         new NewFileOrProjectFeature(),
         new DocumentFormatterFeature(logger, documentSelector),

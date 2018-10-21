@@ -1,11 +1,11 @@
 {
   "name": "PowerShell",
   "displayName": "PowerShell",
-  "version": "1.8.1",
+  "version": "1.9.1",
   "publisher": "ms-vscode",
   "description": "Develop PowerShell scripts in Visual Studio Code!",
   "engines": {
-    "vscode": "^1.23.0"
+    "vscode": "^1.25.0"
   },
   "license": "SEE LICENSE IN LICENSE.txt",
   "homepage": "https://github.com/PowerShell/vscode-powershell/blob/master/README.md",
@@ -37,16 +37,16 @@
     "onCommand:PowerShell.RestartSession"
   ],
   "dependencies": {
-    "vscode": "^1.1.18",
-    "vscode-languageclient": "^4.2.1"
+    "vscode": "~1.1.21",
+    "vscode-languageclient": "~5.0.0"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.32",
-    "@types/node": "^6.0.40",
+    "@types/node": "~10.7.1",
     "mocha": "^4.0.1",
-    "tslint": "^5.9.1",
-    "typescript": "2.9.x",
-    "vsce": "^1.18.0"
+    "tslint": "~5.11.0",
+    "typescript": "~3.0.1",
+    "vsce": "~1.46.0"
   },
   "extensionDependencies": [
     "vscode.powershell"
@@ -60,7 +60,7 @@
   "contributes": {
     "keybindings": [
       {
-        "command": "PowerShell.OnlineHelp",
+        "command": "PowerShell.ShowHelp",
         "key": "ctrl+f1",
         "when": "editorTextFocus && editorLangId == 'powershell'"
       },
@@ -88,7 +88,12 @@
       },
       {
         "command": "PowerShell.OnlineHelp",
-        "title": "Get Online Help for Command",
+        "title": "Get Online Help for Command (Deprecated)",
+        "category": "PowerShell"
+      },
+      {
+        "command": "PowerShell.ShowHelp",
+        "title": "Get Help for Command",
         "category": "PowerShell"
       },
       {
@@ -160,13 +165,13 @@
     "menus": {
       "editor/context": [
         {
-          "when": "resourceLangId == powershell",
+          "when": "editorLangId == powershell",
           "command": "PowerShell.RunSelection",
           "group": "2_powershell"
         },
         {
-          "when": "resourceLangId == powershell",
-          "command": "PowerShell.OnlineHelp",
+          "when": "editorLangId == powershell",
+          "command": "PowerShell.ShowHelp",
           "group": "2_powershell"
         }
       ]
