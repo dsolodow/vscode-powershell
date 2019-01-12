@@ -16,6 +16,22 @@ Instead syntax highlighting for VSCode, Atom, SublimeText and even GitHub is
 provided by the [Editor Syntax] repository on GitHub. Please open any
 [syntax highlighting issues there].
 
+## VSCode is not working like the ISE
+
+The PowerShell extension does not aim to perfectly recreate
+the experience of the PowerShell ISE.
+However, we do want to support compatibility whenever possible
+to do so without breaking existing functionality.
+
+Please see [the ISE compatibility doc](./ise_compatibility.md)
+for ways to configure VSCode to be closer to the ISE.
+
+Bear in mind that many of the UI/UX aspects of VSCode are driven by
+VSCode itself and can't be changed by the extension.
+The VSCode maintainers are quite reasonable though,
+and you can ask for new features [in their repository](https://github.com/Microsoft/vscode).
+
+
 ## Known Issues in the Extension
 
 - Highlighting/completions/command history don't work as I expect in the
@@ -89,6 +105,22 @@ When opening an issue, keep in mind:
   the contributions of community members &mdash; if you're interested in
   [tackling an issue], we always accept contributions and will help you
   at every step.
+
+## Reproducing the Issue
+
+To fix the issue, we need to be able to reproduce it.
+To do that, we need:
+
+- A small/minimal script or sequence of user steps that result in the problem occurring.
+- A description of the behavior you are expecting.
+- A description of the actual behavior that occurs.
+
+In some cases, a GIF of the issue occuring is also very helpful.
+
+When you open a new issue,
+the GitHub issue template will have sections
+to guide you through providing all of this information
+as well as environment information discussed below.
 
 ## Providing Information About Your Environment
 

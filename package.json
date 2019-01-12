@@ -1,7 +1,7 @@
 {
   "name": "PowerShell",
   "displayName": "PowerShell",
-  "version": "1.9.1",
+  "version": "1.10.3",
   "publisher": "ms-vscode",
   "description": "Develop PowerShell scripts in Visual Studio Code!",
   "engines": {
@@ -34,19 +34,20 @@
     "onCommand:PowerShell.SpecifyScriptArgs",
     "onCommand:PowerShell.ShowSessionConsole",
     "onCommand:PowerShell.ShowSessionMenu",
-    "onCommand:PowerShell.RestartSession"
+    "onCommand:PowerShell.RestartSession",
+    "onView:PowerShellCommands"
   ],
   "dependencies": {
-    "vscode": "~1.1.21",
-    "vscode-languageclient": "~5.0.0"
+    "vscode-languageclient": "~5.1.1"
   },
   "devDependencies": {
-    "@types/mocha": "^2.2.32",
-    "@types/node": "~10.7.1",
-    "mocha": "^4.0.1",
+    "@types/mocha": "~2.2.32",
+    "@types/node": "~10.12.12",
+    "mocha": "~4.0.1",
     "tslint": "~5.11.0",
-    "typescript": "~3.0.1",
-    "vsce": "~1.46.0"
+    "typescript": "~3.2.1",
+    "vsce": "~1.46.0",
+    "vscode": "~1.1.22"
   },
   "extensionDependencies": [
     "vscode.powershell"
@@ -58,6 +59,24 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "PowerShellCommandExplorer",
+          "title": "PowerShell Command Explorer",
+          "icon": "media/pwsh.svg"
+        }
+      ]
+    },
+    "views": {
+      "PowerShellCommandExplorer": [
+        {
+          "id": "PowerShellCommands",
+          "name": "PowerShell Commands",
+          "when": "config.powershell.sideBar.CommandExplorerVisibility"
+        }
+      ]
+    },
     "keybindings": [
       {
         "command": "PowerShell.ShowHelp",
@@ -78,12 +97,37 @@
         "command": "PowerShell.RunSelection",
         "key": "f8",
         "when": "editorTextFocus && editorLangId == 'powershell'"
+      },
+      {
+        "command": "editor.action.insertSnippet",
+        "when": "editorTextFocus && editorLangId == 'powershell'",
+        "mac": "cmd+alt+j",
+        "win": "ctrl+alt+j",
+        "linux": "ctrl+alt+j"
       }
     ],
     "commands": [
       {
         "command": "PowerShell.ExpandAlias",
         "title": "Expand Alias",
+        "category": "PowerShell"
+      },
+      {
+        "command": "PowerShell.RefreshCommandsExplorer",
+        "title": "Refresh Command Explorer",
+        "icon": {
+          "light": "resources/light/sync.svg",
+          "dark": "resources/dark/sync.svg"
+        },
+        "category": "PowerShell"
+      },
+      {
+        "command": "PowerShell.InsertCommand",
+        "title": "Insert Command",
+        "icon": {
+          "light": "resources/light/pencil.svg",
+          "dark": "resources/dark/pencil.svg"
+        },
         "category": "PowerShell"
       },
       {
@@ -94,6 +138,10 @@
       {
         "command": "PowerShell.ShowHelp",
         "title": "Get Help for Command",
+        "icon": {
+          "light": "resources/light/question.svg",
+          "dark": "resources/dark/question.svg"
+        },
         "category": "PowerShell"
       },
       {
@@ -163,6 +211,16 @@
       }
     ],
     "menus": {
+      "commandPalette": [
+        {
+          "command": "PowerShell.InsertCommand",
+          "when": "false"
+        },
+        {
+          "command": "PowerShell.RefreshCommandsExplorer",
+          "when": "config.powershell.sideBar.CommandExplorerVisibility"
+        }
+      ],
       "editor/context": [
         {
           "when": "editorLangId == powershell",
@@ -173,6 +231,25 @@
           "when": "editorLangId == powershell",
           "command": "PowerShell.ShowHelp",
           "group": "2_powershell"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "PowerShell.RefreshCommandsExplorer",
+          "when": "view == PowerShellCommands",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "PowerShell.ShowHelp",
+          "when": "view == PowerShellCommands",
+          "group": "inline@1"
+        },
+        {
+          "command": "PowerShell.InsertCommand",
+          "when": "view == PowerShellCommands",
+          "group": "inline@2"
         }
       ]
     },
@@ -400,6 +477,11 @@
       "type": "object",
       "title": "PowerShell Configuration",
       "properties": {
+        "powershell.sideBar.CommandExplorerVisibility": {
+          "type": "boolean",
+          "default": true,
+          "description": "Specifies the visibility of the Command Explorer in the PowerShell Side Bar."
+        },
         "powershell.powerShellExePath": {
           "type": "string",
           "default": "",
@@ -477,6 +559,11 @@
           "type": "boolean",
           "default": true,
           "description": "Enables syntax based code folding. When disabled, the default indentation based code folding is used."
+        },
+        "powershell.codeFolding.showLastLine": {
+          "type": "boolean",
+          "default": true,
+          "description": "Shows the last line of a folded section similar to the default VSCode folding style. When disabled, the entire folded region is hidden."
         },
         "powershell.codeFormatting.preset": {
           "type": "string",

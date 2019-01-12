@@ -1,5 +1,6 @@
 # PowerShell Language Support for Visual Studio Code
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/df06b9909e7442cebc1132bda0b8c0e3)](https://app.codacy.com/app/TylerLeonhardt/vscode-powershell?utm_source=github.com&utm_medium=referral&utm_content=PowerShell/vscode-powershell&utm_campaign=Badge_Grade_Dashboard)
 [![Version](https://vsmarketplacebadge.apphb.com/version/ms-vscode.PowerShell.svg)](https://marketplace.visualstudio.com/items?itemName=ms-vscode.PowerShell) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/ms-vscode.PowerShell.svg)](https://marketplace.visualstudio.com/items?itemName=ms-vscode.PowerShell) [![windows build](https://img.shields.io/appveyor/ci/PowerShell/vscode-powershell/master.svg?label=windows+build)](https://ci.appveyor.com/project/PowerShell/vscode-powershell) [![linux/macos build](https://img.shields.io/travis/PowerShell/vscode-powershell/master.svg?label=linux/macos+build)](https://travis-ci.org/PowerShell/vscode-powershell) [![Join the chat at https://gitter.im/PowerShell/vscode-powershell](https://badges.gitter.im/PowerShell/vscode-powershell.svg)](https://gitter.im/PowerShell/vscode-powershell?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This extension provides rich PowerShell language support for [Visual Studio Code](https://github.com/Microsoft/vscode).
@@ -12,7 +13,7 @@ that Visual Studio Code provides.
 - **Linux** with PowerShell Core (all PowerShell-supported distributions)
 - **macOS and OS X** with PowerShell Core
 
-Read the [installation instructions](https://github.com/PowerShell/PowerShell/blob/master/docs/learning-powershell/using-vscode.md)
+Read the [installation instructions](https://docs.microsoft.com/en-us/powershell/scripting/components/vscode/using-vscode)
 to get more details on how to use the extension on these platforms.
 
 Read the [FAQ](https://github.com/PowerShell/vscode-powershell/wiki/FAQ) for answers to common questions.
@@ -38,7 +39,7 @@ In the Extensions pane, search for "PowerShell" extension and install it there. 
 get notified automatically about any future extension updates!
 
 You can also install a VSIX package from our [Releases page](https://github.com/PowerShell/vscode-powershell/releases) by following the
-[Install from a VSIX](https://code.visualstudio.com/docs/extensions/install-extension#_install-from-a-vsix)
+[Install from a VSIX](https://code.visualstudio.com/docs/editor/extension-gallery#_install-from-a-vsix)
 instructions.  The easiest way is through the command line:
 
 ```
